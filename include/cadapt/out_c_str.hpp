@@ -3,8 +3,8 @@
 #ifdef __cpp_lib_modules
 import std;
 #else // Support Workaround pre C++23
-#include <algorithm>
 #include <string>
+#include <algorithm>
 #endif
 
 
@@ -52,7 +52,8 @@ namespace cadapt {
         out_c_str_t(out_c_str_t const&) = delete;
 
         ~out_c_str_t() {
-            target_.resize(std::min(target_.find('\0'), target_.size()));
+            target_.resize(
+                static_cast<size_type>(std::find(target_.cbegin(), target_.cend(), '\0') - target_.cbegin()));
         }
 
         operator C*()&& noexcept {
