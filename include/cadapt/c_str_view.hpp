@@ -2,6 +2,7 @@
 
 #include <string>
 #include <string_view>
+#include <stdexcept>
 
 
 namespace cadapt {
@@ -31,7 +32,11 @@ namespace cadapt {
 
         constexpr basic_c_str_view(null_terminated_t, C const* const c_str, std::size_t const len):
             std::basic_string_view<C, T>(c_str, len)
-            {}
+        {
+            if(c_str[len] != '\0') {
+                throw std::logic_error("not null terminated");
+            }
+        }
 
         constexpr basic_c_str_view(std::nullptr_t) = delete;
 
