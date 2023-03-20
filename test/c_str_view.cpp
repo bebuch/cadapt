@@ -1,5 +1,5 @@
 #include <cadapt/c_str_view.hpp>
 
-int main(){
+void test_c_str_view(){
 
 }

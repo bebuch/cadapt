@@ -53,6 +53,9 @@ namespace cadapt {
         }
     };
 
+    template <typename C, typename T, typename A>
+    basic_c_str_view(std::basic_string<C, T, A> const&) -> basic_c_str_view<C, T>;
+
 
     using c_str_view = basic_c_str_view<char>;
     using u8c_str_view = basic_c_str_view<char8_t>;
