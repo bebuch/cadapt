@@ -17,10 +17,7 @@ namespace cadapt {
     /// `0` and `count` are null terminators after the function call. All other characters have undefined values
     /// after the function call.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    constexpr void resize_for_out_ptr(
-        std::basic_string<C, T, A>& string,
-        typename std::basic_string<C, T, A>::size_type const count
-    ) {
+    constexpr void resize_for_out_ptr(std::basic_string<C, T, A>& string, std::size_t const count) {
     #ifdef __cpp_lib_string_resize_and_overwrite
         string.resize_and_overwrite(count, [count](char*, std::size_t) {
             return count;
@@ -37,13 +34,12 @@ namespace cadapt {
     class out_c_str_t{
     public:
         using value_type = std::basic_string<C, T, A>;
-        using size_type = typename value_type::size_type;
 
         out_c_str_t(value_type& target)
             : target_(target)
             {}
 
-        out_c_str_t(value_type& target, size_type const max_target_length)
+        out_c_str_t(value_type& target, std::size_t const max_target_length)
             : out_c_str_t(target)
         {
             resize_for_out_ptr(target, max_target_length);
@@ -52,8 +48,8 @@ namespace cadapt {
         out_c_str_t(out_c_str_t const&) = delete;
 
         ~out_c_str_t() {
-            target_.resize(
-                static_cast<size_type>(std::find(target_.cbegin(), target_.cend(), '\0') - target_.cbegin()));
+            target_.resize(static_cast<std::size_t>(
+                std::find(target_.cbegin(), target_.cend(), '\0') - target_.cbegin()));
         }
 
         operator C*()&& noexcept {
@@ -75,7 +71,7 @@ namespace cadapt {
     };
 
 
-    // NOTE: You can take the address of an function, but not of an constructor
+    // NOTE: Free standing functions can be externally overloaded.
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     out_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target) {
@@ -83,10 +79,7 @@ namespace cadapt {
     }
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    out_c_str_t<C, T, A> out_c_str(
-        std::basic_string<C, T, A>& target,
-        typename std::basic_string<C, T, A>::size_type const max_target_length
-    ) {
+    out_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length) {
         return {target, max_target_length};
     }
 
