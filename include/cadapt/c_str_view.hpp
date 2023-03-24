@@ -84,10 +84,10 @@ namespace cadapt {
 
 
     using c_str_view = basic_c_str_view<char>;
-    using u8c_str_view = basic_c_str_view<char8_t>;
-    using u16c_str_view = basic_c_str_view<char16_t>;
-    using u32c_str_view = basic_c_str_view<char32_t>;
     using wc_str_view = basic_c_str_view<wchar_t>;
+    using u32c_str_view = basic_c_str_view<char32_t>;
+    using u16c_str_view = basic_c_str_view<char16_t>;
+    using u8c_str_view = basic_c_str_view<char8_t>;
 
 
     namespace literals {
@@ -97,20 +97,20 @@ namespace cadapt {
             return c_str_view(null_terminated, str, len);
         }
 
-        constexpr u8c_str_view operator ""_sv(char8_t const* const str, std::size_t const len) noexcept {
-            return u8c_str_view(null_terminated, str, len);
-        }
-
-        constexpr u16c_str_view operator ""_sv(char16_t const* const str, std::size_t const len) noexcept {
-            return u16c_str_view(null_terminated, str, len);
+        constexpr wc_str_view operator ""_sv(wchar_t const* const str, std::size_t const len) noexcept {
+            return wc_str_view(null_terminated, str, len);
         }
 
         constexpr u32c_str_view operator ""_sv(char32_t const* const str, std::size_t const len) noexcept {
             return u32c_str_view(null_terminated, str, len);
         }
 
-        constexpr wc_str_view operator ""_sv(wchar_t const* const str, std::size_t const len) noexcept {
-            return wc_str_view(null_terminated, str, len);
+        constexpr u16c_str_view operator ""_sv(char16_t const* const str, std::size_t const len) noexcept {
+            return u16c_str_view(null_terminated, str, len);
+        }
+
+        constexpr u8c_str_view operator ""_sv(char8_t const* const str, std::size_t const len) noexcept {
+            return u8c_str_view(null_terminated, str, len);
         }
 
 
@@ -125,4 +125,3 @@ inline constexpr bool std::ranges::enable_borrowed_range<cadapt::basic_c_str_vie
 
 template <typename C, typename T>
 inline constexpr bool std::ranges::enable_view<cadapt::basic_c_str_view<C, T>> = true;
-
