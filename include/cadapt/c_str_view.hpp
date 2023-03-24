@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <execution>
 #include <string>
 #include <string_view>
 #include <stdexcept>
@@ -17,10 +19,8 @@ namespace cadapt {
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        for (std::size_t i = 0; i < len; ++i) {
-            if (c_str[i] == 0) {
-                throw std::logic_error("null terminater in null terminated string data range");
-            }
+        if (std::find(std::execution::unseq, c_str, c_str + len, 0) != c_str + len) {
+            throw std::logic_error("null terminater in null terminated string data range");
         }
     }
 
@@ -68,7 +68,7 @@ namespace cadapt {
         [[nodiscard]] constexpr basic_c_str_view(C const* const c_str, std::size_t const len):
             basic_c_str_view(null_terminated, c_str_or_empty(c_str), len)
         {
-            verify_c_str_ptr();
+            verify_c_str_ptr(c_str, len);
             verify_c_str_data();
             verify_c_str_terminator();
         }
@@ -109,10 +109,6 @@ namespace cadapt {
         constexpr void swap(std::basic_string_view<C, T>&) = delete;
         constexpr void swap(basic_c_str_view& view) noexcept {
             std::basic_string_view<C, T>::swap(view);
-        }
-
-        constexpr void verify_c_str_ptr() const {
-            verify_c_str_ptr(c_str(), std::basic_string_view<C, T>::size());
         }
 
         constexpr void verify_c_str_data() const {
