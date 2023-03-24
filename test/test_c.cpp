@@ -4,55 +4,40 @@
 
 #include <string_view>
 
-class in_c_str_test: public ::testing::Test {
-protected:
-    std::string_view ref_ = "";
-
-    void set_ref(std::same_as<std::string_view> auto const ref) {
-        ref_ = ref;
-    }
-
-    bool char_const_ptr(char const* c_str) const {
-        return ref_ == c_str;
-    }
-
-    bool char_ptr(char* c_str) const {
-        return ref_ == c_str;
-    }
-};
-
 using cadapt::c_str;
+using cadapt::unverified_c_str;
 using namespace std::literals;
 using namespace cadapt::literals;
 
-TEST_F(in_c_str_test, c_str) {
-    set_ref("test"sv);
-    EXPECT_TRUE(char_const_ptr(c_str("test")));
-
-    set_ref("te\0st"sv);
-    EXPECT_FALSE(char_const_ptr(c_str("te\0st")));
+static constexpr auto is_equal(
+    std::same_as<std::string_view> auto const ref,
+    char const* c_str
+) noexcept -> bool {
+    return ref == c_str;
 }
 
-TEST_F(in_c_str_test, std_string) {
-    set_ref("test"sv);
-    EXPECT_TRUE(char_const_ptr(c_str("test"s)));
-
-    set_ref("te\0st"sv);
-    EXPECT_THROW(char_const_ptr(c_str("te\0st"s)), std::logic_error);
+TEST(c_str_test, c_str) {
+    EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test")));
+    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st")));
 }
 
-TEST_F(in_c_str_test, std_string_view) {
-    set_ref("test"sv);
-    EXPECT_TRUE(char_const_ptr(c_str("test"sv)));
-
-    set_ref("te\0st"sv);
-    EXPECT_THROW(char_const_ptr(c_str("te\0st"sv)), std::logic_error);
+TEST(c_str_test, std_string) {
+    EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test"s)));
+    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st"s)));
+    EXPECT_TRUE(is_equal("test"sv, c_str("test"s)));
+    EXPECT_THROW(is_equal("te\0st"sv, c_str("te\0st"s)), std::logic_error);
 }
 
-TEST_F(in_c_str_test, c_str_view) {
-    set_ref("test"sv);
-    EXPECT_TRUE(char_const_ptr(c_str("test"_sv)));
+TEST(c_str_test, std_string_view) {
+    EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test"sv)));
+    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st"sv)));
+    EXPECT_TRUE(is_equal("test"sv, c_str("test"sv)));
+    EXPECT_THROW(is_equal("te\0st"sv, c_str("te\0st"sv)), std::logic_error);
+}
 
-    set_ref("te\0st"sv);
-    EXPECT_THROW(char_const_ptr(c_str("te\0st"_sv)), std::logic_error);
+TEST(c_str_test, c_str_view) {
+    EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test"_sv)));
+    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st"_sv)));
+    EXPECT_TRUE(is_equal("test"sv, c_str("test"_sv)));
+    EXPECT_THROW(is_equal("te\0st"sv, c_str("te\0st"_sv)), std::logic_error);
 }
