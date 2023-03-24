@@ -19,6 +19,8 @@ static constexpr auto is_equal(
 TEST(c_str_test, c_str) {
     EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test")));
     EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st")));
+    EXPECT_TRUE(is_equal("test"sv, c_str("test")));
+    EXPECT_THROW(is_equal("te\0st"sv, c_str("te\0st")), std::logic_error);
 }
 
 TEST(c_str_test, std_string) {
