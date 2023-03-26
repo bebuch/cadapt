@@ -1,8 +1,8 @@
 #pragma once
 
+#include "utility.hpp"
+
 #include <algorithm>
-#include <functional>
-#include <execution>
 #include <string>
 #include <string_view>
 #include <stdexcept>
@@ -20,15 +20,8 @@ namespace cadapt {
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        constexpr auto find = []<typename ... T>(T&& ... v){
-            if (std::is_constant_evaluated()) {
-                return std::find(std::forward<T>(v) ...);
-            } else {
-                return std::find(std::execution::unseq, std::forward<T>(v) ...);
-            }
-        };
-
-        if (find(c_str, c_str + len, C{}) != c_str + len) {
+        constexpr auto find_wrapper = []<typename ... T>(T&& ... v) { return std::find(std::forward<T>(v) ...); };
+        if (unseq_invoke(find_wrapper, c_str, c_str + len, C{}) != c_str + len) {
             throw std::logic_error("null terminater in null terminated string data range");
         }
     }

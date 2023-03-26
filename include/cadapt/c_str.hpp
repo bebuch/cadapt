@@ -1,7 +1,6 @@
 #pragma once
 
 #include "c_str_view.hpp"
-#include "utility.hpp"
 
 #if __has_include(<QString>)
 #include <QString>
