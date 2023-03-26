@@ -12,21 +12,21 @@ namespace cadapt {
 
     template <typename C>
     constexpr void verify_c_str_ptr(C const* const c_str, std::size_t const len) {
-        if (c_str == nullptr && len > 0) {
+        if (c_str == nullptr && len > C{}) {
             throw std::logic_error("nullptr c_str with length greater zero");
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        if (std::find(std::execution::unseq, c_str, c_str + len, 0) != c_str + len) {
+        if (std::find(std::execution::unseq, c_str, c_str + len, C{}) != c_str + len) {
             throw std::logic_error("null terminater in null terminated string data range");
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_terminator(C const* const c_str, std::size_t const len) {
-        if (c_str[len] != 0) {
+        if (c_str[len] != C{}) {
             throw std::logic_error("not null terminated");
         }
     }
