@@ -13,21 +13,35 @@ namespace cadapt {
     template <typename C>
     constexpr void verify_c_str_ptr(C const* const c_str, std::size_t const len) {
         if (c_str == nullptr && len > C{}) {
-            throw std::logic_error("nullptr c_str with length greater zero");
+            if (std::is_constant_evaluated()) {
+                throw "nullptr c_str with length greater zero";
+            } else {
+                throw std::logic_error("nullptr c_str with length greater zero");
+            }
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        if (std::find(std::execution::unseq, c_str, c_str + len, C{}) != c_str + len) {
-            throw std::logic_error("null terminater in null terminated string data range");
+        if (std::is_constant_evaluated()) {
+            if (std::find(c_str, c_str + len, C{}) != c_str + len) {
+                throw "null terminater in null terminated string data range";
+            }
+        } else {
+            if (std::find(std::execution::unseq, c_str, c_str + len, C{}) != c_str + len) {
+                throw std::logic_error("null terminater in null terminated string data range");
+            }
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_terminator(C const* const c_str, std::size_t const len) {
         if (c_str[len] != C{}) {
-            throw std::logic_error("not null terminated");
+            if (std::is_constant_evaluated()) {
+                throw "not null terminated";
+            } else {
+                throw std::logic_error("not null terminated");
+            }
         }
     }
 
@@ -112,16 +126,22 @@ namespace cadapt {
         }
 
         constexpr void verify_c_str_data() const {
-            verify_c_str_data(c_str(), std::basic_string_view<C, T>::size());
+            cadapt::verify_c_str_data(c_str(), std::basic_string_view<C, T>::size());
         }
 
         constexpr void verify_c_str_terminator() const {
-            verify_c_str_terminator(c_str(), std::basic_string_view<C, T>::size());
+            cadapt::verify_c_str_terminator(c_str(), std::basic_string_view<C, T>::size());
         }
     };
 
     template <typename C, typename T, typename A>
     basic_c_str_view(std::basic_string<C, T, A> const&) -> basic_c_str_view<C, T>;
+
+    template <typename Cc, std::size_t N>
+    basic_c_str_view(Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
+
+    template <typename Cc, std::size_t N>
+    basic_c_str_view(null_terminated_t, Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
 
 
     using c_str_view = basic_c_str_view<char>;
@@ -134,24 +154,24 @@ namespace cadapt {
     namespace literals {
 
 
-        [[nodiscard]] constexpr c_str_view operator""_sv(char const* const str, std::size_t const len) {
-            return c_str_view(null_terminated, str, len);
+        [[nodiscard]] consteval c_str_view operator""_sv(char const* const str, std::size_t const len) {
+            return c_str_view(str, len);
         }
 
-        [[nodiscard]] constexpr wc_str_view operator""_sv(wchar_t const* const str, std::size_t const len) {
-            return wc_str_view(null_terminated, str, len);
+        [[nodiscard]] consteval wc_str_view operator""_sv(wchar_t const* const str, std::size_t const len) {
+            return wc_str_view(str, len);
         }
 
-        [[nodiscard]] constexpr u32c_str_view operator""_sv(char32_t const* const str, std::size_t const len) {
-            return u32c_str_view(null_terminated, str, len);
+        [[nodiscard]] consteval u32c_str_view operator""_sv(char32_t const* const str, std::size_t const len) {
+            return u32c_str_view(str, len);
         }
 
-        [[nodiscard]] constexpr u16c_str_view operator""_sv(char16_t const* const str, std::size_t const len) {
-            return u16c_str_view(null_terminated, str, len);
+        [[nodiscard]] consteval u16c_str_view operator""_sv(char16_t const* const str, std::size_t const len) {
+            return u16c_str_view(str, len);
         }
 
-        [[nodiscard]] constexpr u8c_str_view operator""_sv(char8_t const* const str, std::size_t const len) {
-            return u8c_str_view(null_terminated, str, len);
+        [[nodiscard]] consteval u8c_str_view operator""_sv(char8_t const* const str, std::size_t const len) {
+            return u8c_str_view(str, len);
         }
 
 

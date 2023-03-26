@@ -5,7 +5,10 @@
 #include <string_view>
 
 using cadapt::c_str;
+using cadapt::c_str_view;
+using cadapt::basic_c_str_view;
 using cadapt::unverified_c_str;
+using cadapt::null_terminated;
 using namespace std::literals;
 using namespace cadapt::literals;
 
@@ -100,29 +103,29 @@ TEST(c_str_test, std_string_view) {
 
 TEST(c_str_test, c_str_view) {
     EXPECT_TRUE(is_equal("test"sv, unverified_c_str("test"_sv)));
-    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str("te\0st"_sv)));
+    EXPECT_FALSE(is_equal("te\0st"sv, unverified_c_str(basic_c_str_view(null_terminated, "te\0st"))));
     EXPECT_TRUE(is_equal("test"sv, c_str("test"_sv)));
-    EXPECT_THROW(is_equal("te\0st"sv, c_str("te\0st"_sv)), std::logic_error);
+    EXPECT_THROW(is_equal("te\0st"sv, c_str(basic_c_str_view(null_terminated, "te\0st"))), std::logic_error);
 
     EXPECT_TRUE(is_equal(L"test"sv, unverified_c_str(L"test"_sv)));
-    EXPECT_FALSE(is_equal(L"te\0st"sv, unverified_c_str(L"te\0st"_sv)));
+    EXPECT_FALSE(is_equal(L"te\0st"sv, unverified_c_str(basic_c_str_view(null_terminated, L"te\0st"))));
     EXPECT_TRUE(is_equal(L"test"sv, c_str(L"test"_sv)));
-    EXPECT_THROW(is_equal(L"te\0st"sv, c_str(L"te\0st"_sv)), std::logic_error);
+    EXPECT_THROW(is_equal(L"te\0st"sv, c_str(basic_c_str_view(null_terminated, L"te\0st"))), std::logic_error);
 
     EXPECT_TRUE(is_equal(U"test"sv, unverified_c_str(U"test"_sv)));
-    EXPECT_FALSE(is_equal(U"te\0st"sv, unverified_c_str(U"te\0st"_sv)));
+    EXPECT_FALSE(is_equal(U"te\0st"sv, unverified_c_str(basic_c_str_view(null_terminated, U"te\0st"))));
     EXPECT_TRUE(is_equal(U"test"sv, c_str(U"test"_sv)));
-    EXPECT_THROW(is_equal(U"te\0st"sv, c_str(U"te\0st"_sv)), std::logic_error);
+    EXPECT_THROW(is_equal(U"te\0st"sv, c_str(basic_c_str_view(null_terminated, U"te\0st"))), std::logic_error);
 
     EXPECT_TRUE(is_equal(u"test"sv, unverified_c_str(u"test"_sv)));
-    EXPECT_FALSE(is_equal(u"te\0st"sv, unverified_c_str(u"te\0st"_sv)));
+    EXPECT_FALSE(is_equal(u"te\0st"sv, unverified_c_str(basic_c_str_view(null_terminated, u"te\0st"))));
     EXPECT_TRUE(is_equal(u"test"sv, c_str(u"test"_sv)));
-    EXPECT_THROW(is_equal(u"te\0st"sv, c_str(u"te\0st"_sv)), std::logic_error);
+    EXPECT_THROW(is_equal(u"te\0st"sv, c_str(basic_c_str_view(null_terminated, u"te\0st"))), std::logic_error);
 
     EXPECT_TRUE(is_equal(u8"test"sv, unverified_c_str(u8"test"_sv)));
-    EXPECT_FALSE(is_equal(u8"te\0st"sv, unverified_c_str(u8"te\0st"_sv)));
+    EXPECT_FALSE(is_equal(u8"te\0st"sv, unverified_c_str(basic_c_str_view(null_terminated, u8"te\0st"))));
     EXPECT_TRUE(is_equal(u8"test"sv, c_str(u8"test"_sv)));
-    EXPECT_THROW(is_equal(u8"te\0st"sv, c_str(u8"te\0st"_sv)), std::logic_error);
+    EXPECT_THROW(is_equal(u8"te\0st"sv, c_str(basic_c_str_view(null_terminated, u8"te\0st"))), std::logic_error);
 }
 
 #if __has_include(<QString>)
