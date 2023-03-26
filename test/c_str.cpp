@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <string_view>
-
 using cadapt::c_str;
 using cadapt::c_str_view;
 using cadapt::basic_c_str_view;
