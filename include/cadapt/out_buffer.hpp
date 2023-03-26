@@ -52,7 +52,7 @@ namespace cadapt {
         }
 
         operator C*()&& noexcept {
-            return const_cast<C*>(target_.c_str());
+            return target_.data();
         }
 
         operator C*()const& noexcept {
