@@ -35,23 +35,23 @@ namespace cadapt {
     public:
         using value_type = std::basic_string<C, T, A>;
 
-        inout_c_str_t(value_type& target)
+        [[nodiscard]] constexpr inout_c_str_t(value_type& target) noexcept
             : target_(target)
             {}
 
         inout_c_str_t(inout_c_str_t const&) = delete;
 
-        ~inout_c_str_t() {
+        constexpr ~inout_c_str_t() {
             target_.resize(static_cast<std::size_t>(
                 std::find(target_.cbegin(), target_.cend(), '\0') - target_.cbegin()));
         }
 
-        operator C*()&& noexcept {
+        [[nodiscard]] constexpr operator C*()&& noexcept {
             return const_cast<C*>(target_.c_str());
         }
 
-        operator C*()const& noexcept {
-            static constexpr auto always_false = sizeof(C) == 0;
+        [[nodiscard]] constexpr operator C*()const& noexcept {
+            constexpr auto always_false = sizeof(C) == 0;
             static_assert(always_false, "You have created a variable of type 'inout_c_str_t' which can easily be used "
                 "incorrectly! Please use 'out_c_str(string_variable)' as argument in your C function call without "
                 "creating a variable. The reason for this is that 'string_variable' could have an incorrect size and "
@@ -69,12 +69,14 @@ namespace cadapt {
     // NOTE: Free standing functions can be externally overloaded.
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    inout_c_str_t<C, T, A> inout_c_str(std::basic_string<C, T, A>& target) {
+    [[nodiscard]] constexpr auto inout_c_str(std::basic_string<C, T, A>& target) noexcept
+    -> inout_c_str_t<C, T, A> {
         return target;
     }
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    inout_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length) {
+    [[nodiscard]] constexpr auto out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length)
+    -> inout_c_str_t<C, T, A> {
         resize_for_out_ptr(target, max_target_length);
         return target;
     }
