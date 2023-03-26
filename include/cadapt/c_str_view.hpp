@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <execution>
 #include <string>
 #include <string_view>
@@ -13,35 +14,29 @@ namespace cadapt {
     template <typename C>
     constexpr void verify_c_str_ptr(C const* const c_str, std::size_t const len) {
         if (c_str == nullptr && len > C{}) {
-            if (std::is_constant_evaluated()) {
-                throw "nullptr c_str with length greater zero";
-            } else {
-                throw std::logic_error("nullptr c_str with length greater zero");
-            }
+            throw std::logic_error("nullptr c_str with length greater zero");
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        if (std::is_constant_evaluated()) {
-            if (std::find(c_str, c_str + len, C{}) != c_str + len) {
-                throw "null terminater in null terminated string data range";
+        constexpr auto find = []<typename ... T>(T&& ... v){
+            if (std::is_constant_evaluated()) {
+                return std::find(std::forward<T>(v) ...);
+            } else {
+                return std::find(std::execution::unseq, std::forward<T>(v) ...);
             }
-        } else {
-            if (std::find(std::execution::unseq, c_str, c_str + len, C{}) != c_str + len) {
-                throw std::logic_error("null terminater in null terminated string data range");
-            }
+        };
+
+        if (find(c_str, c_str + len, C{}) != c_str + len) {
+            throw std::logic_error("null terminater in null terminated string data range");
         }
     }
 
     template <typename C>
     constexpr void verify_c_str_terminator(C const* const c_str, std::size_t const len) {
         if (c_str[len] != C{}) {
-            if (std::is_constant_evaluated()) {
-                throw "not null terminated";
-            } else {
-                throw std::logic_error("not null terminated");
-            }
+            throw std::logic_error("not null terminated");
         }
     }
 
