@@ -31,23 +31,17 @@ namespace cadapt {
 
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    class out_c_str_t{
+    class inout_c_str_t{
     public:
         using value_type = std::basic_string<C, T, A>;
 
-        out_c_str_t(value_type& target)
+        inout_c_str_t(value_type& target)
             : target_(target)
             {}
 
-        out_c_str_t(value_type& target, std::size_t const max_target_length)
-            : out_c_str_t(target)
-        {
-            resize_for_out_ptr(target, max_target_length);
-        }
+        inout_c_str_t(inout_c_str_t const&) = delete;
 
-        out_c_str_t(out_c_str_t const&) = delete;
-
-        ~out_c_str_t() {
+        ~inout_c_str_t() {
             target_.resize(static_cast<std::size_t>(
                 std::find(target_.cbegin(), target_.cend(), '\0') - target_.cbegin()));
         }
@@ -58,11 +52,12 @@ namespace cadapt {
 
         operator C*()const& noexcept {
             static constexpr auto always_false = sizeof(C) == 0;
-            static_assert(always_false, "You have created a variable of type 'out_c_str_t' which can easily be used "
-                "incorrectly! Please use 'out_c_str(your_string)' as argument in your C function call without creating "
-                "a variable. The reason for this is that 'your_string' could have an incorrect size and contain memory "
-                "garbage between your C function call and the destruction of the 'out_c_str_t' object. If you are sure "
-                "you know what you are doing, you can use 'std::move' with your C variable 'out_c_str_t'.");
+            static_assert(always_false, "You have created a variable of type 'inout_c_str_t' which can easily be used "
+                "incorrectly! Please use 'out_c_str(string_variable)' as argument in your C function call without "
+                "creating a variable. The reason for this is that 'string_variable' could have an incorrect size and "
+                "contain memory garbage between your C function call and the destruction of the 'inout_c_str_t' "
+                "object. If you are sure you know what you are doing, you can use 'std::move' on your "
+                "'inout_c_str_t' variable.");
             return nullptr;
         }
 
@@ -74,13 +69,14 @@ namespace cadapt {
     // NOTE: Free standing functions can be externally overloaded.
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    out_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target) {
-        return {target};
+    inout_c_str_t<C, T, A> inout_c_str(std::basic_string<C, T, A>& target) {
+        return target;
     }
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    out_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length) {
-        return {target, max_target_length};
+    inout_c_str_t<C, T, A> out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length) {
+        resize_for_out_ptr(target, max_target_length);
+        return target;
     }
 
 
