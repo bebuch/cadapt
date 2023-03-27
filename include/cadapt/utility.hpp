@@ -18,14 +18,5 @@ namespace cadapt {
         return const_cast<T*>(ptr);
     }
 
-    template <typename Fn, typename ... T>
-    constexpr decltype(auto) unseq_invoke(Fn&& fn, T&& ... v) {
-        if (std::is_constant_evaluated()) {
-            return std::invoke(std::forward<Fn>(fn), std::forward<T>(v) ...);
-        } else {
-            return std::invoke(std::forward<Fn>(fn), std::execution::unseq, std::forward<T>(v) ...);
-        }
-    }
-
 
 }

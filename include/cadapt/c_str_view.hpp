@@ -20,8 +20,7 @@ namespace cadapt {
 
     template <typename C>
     constexpr void verify_c_str_data(C const* const c_str, std::size_t const len) {
-        constexpr auto find_wrapper = []<typename ... T>(T&& ... v) { return std::find(std::forward<T>(v) ...); };
-        if (unseq_invoke(find_wrapper, c_str, c_str + len, C{}) != c_str + len) {
+        if (std::find(c_str, c_str + len, C{}) != c_str + len) {
             throw std::logic_error("null terminater in null terminated string data range");
         }
     }
