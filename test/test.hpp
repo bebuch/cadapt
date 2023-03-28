@@ -9,3 +9,7 @@
 #define CT_EXPECT_FALSE(val) \
     static_assert(!(val)); \
     EXPECT_FALSE(val)
+
+#define CT_EXPECT_NO_THROW(val) \
+    static_assert(((val), true)); \
+    EXPECT_NO_THROW(val)
