@@ -138,7 +138,7 @@ namespace cadapt {
     using u8c_str_view = basic_c_str_view<char8_t>;
 
 
-    namespace literals {
+    inline namespace literals {
 
 
         [[nodiscard]] consteval c_str_view operator""_sv(char const* const str, std::size_t const len) {
