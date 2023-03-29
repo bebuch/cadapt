@@ -42,6 +42,46 @@ TEST(c_str_view_test, verify_c_str_ptr) {
     EXPECT_THROW(verify_c_str_ptr(static_cast<char8_t const*>(nullptr), 1), std::logic_error);
 }
 
+TEST(c_str_view_test, verify_c_str_data) {
+    CT_EXPECT_NO_THROW(verify_c_str_data("", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_data(L"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_data(U"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_data(u"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_data(u8"", 0));
+
+    CT_EXPECT_NO_THROW(verify_c_str_data("test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_data(L"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_data(U"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_data(u"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_data(u8"test", 4));
+
+    EXPECT_THROW(verify_c_str_data("te\0st", 5), std::logic_error);
+    EXPECT_THROW(verify_c_str_data(L"te\0st", 5), std::logic_error);
+    EXPECT_THROW(verify_c_str_data(U"te\0st", 5), std::logic_error);
+    EXPECT_THROW(verify_c_str_data(u"te\0st", 5), std::logic_error);
+    EXPECT_THROW(verify_c_str_data(u8"te\0st", 5), std::logic_error);
+}
+
+TEST(c_str_view_test, verify_c_str_terminator) {
+    CT_EXPECT_NO_THROW(verify_c_str_terminator("", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(L"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(U"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(u"", 0));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(u8"", 0));
+
+    CT_EXPECT_NO_THROW(verify_c_str_terminator("test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(L"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(U"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(u"test", 4));
+    CT_EXPECT_NO_THROW(verify_c_str_terminator(u8"test", 4));
+
+    EXPECT_THROW(verify_c_str_terminator("test", 3), std::logic_error);
+    EXPECT_THROW(verify_c_str_terminator(L"test", 3), std::logic_error);
+    EXPECT_THROW(verify_c_str_terminator(U"test", 3), std::logic_error);
+    EXPECT_THROW(verify_c_str_terminator(u"test", 3), std::logic_error);
+    EXPECT_THROW(verify_c_str_terminator(u8"test", 3), std::logic_error);
+}
+
 TEST(c_str_view_test, static_members) {
     static_assert(std::derived_from<c_str_view, std::string_view>);
     static_assert(std::derived_from<wc_str_view, std::wstring_view>);
