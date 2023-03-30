@@ -32,9 +32,9 @@ namespace cadapt {
         }
     }
 
-    struct null_terminated_t{};
+    struct null_term_t{};
 
-    static constexpr null_terminated_t null_terminated;
+    static constexpr null_term_t null_term;
 
     template <typename C, typename T = std::char_traits<C>>
     struct basic_c_str_view: std::basic_string_view<C, T>{
@@ -48,31 +48,26 @@ namespace cadapt {
             : std::basic_string_view<C, T>(empty)
             {}
 
-        [[nodiscard]] constexpr basic_c_str_view(basic_c_str_view const&) = default;
-
-        template <typename A>
-        [[nodiscard]] constexpr basic_c_str_view(std::basic_string<C, T, A> const& string):
-            std::basic_string_view<C, T>(string.c_str(), string.size())
-        {
-            verify_c_str_data();
-        }
+        [[nodiscard]] constexpr basic_c_str_view(std::nullptr_t) noexcept
+            : std::basic_string_view<C, T>(empty)
+            {}
 
         [[nodiscard]] constexpr basic_c_str_view(C const* const c_str) noexcept:
             std::basic_string_view<C, T>(c_str_or_empty(c_str))
             {}
 
-        // efficient but unsave function, expects C != nullptr && c_str[< len] != 0 && c_str[len] == 0
-        [[nodiscard]] constexpr basic_c_str_view(null_terminated_t, C const* const c_str, std::size_t const len) noexcept:
-            std::basic_string_view<C, T>(c_str, len)
-            {}
-
         [[nodiscard]] constexpr basic_c_str_view(C const* const c_str, std::size_t const len):
-            basic_c_str_view(null_terminated, c_str_or_empty(c_str), len)
+            basic_c_str_view(null_term, c_str_or_empty(c_str), len)
         {
             verify_c_str_ptr(c_str, len);
             verify_c_str_data();
             verify_c_str_terminator();
         }
+
+        // efficient but unsave function, expects C != nullptr && c_str[< len] != 0 && c_str[len] == 0
+        [[nodiscard]] constexpr basic_c_str_view(null_term_t, C const* const c_str, std::size_t const len) noexcept:
+            std::basic_string_view<C, T>(c_str, len)
+            {}
 
         template <typename Cc, std::size_t N>
         requires (N > 0 && std::same_as<std::remove_const_t<Cc>, C>)
@@ -86,13 +81,18 @@ namespace cadapt {
         // efficient but unsave function, expects c_str[< N] != 0 && c_str[N] == 0
         template <typename Cc, std::size_t N>
         requires (N > 0 && std::same_as<std::remove_const_t<Cc>, C>)
-        [[nodiscard]] constexpr basic_c_str_view(null_terminated_t, Cc(&c_str)[N]) noexcept:
-            basic_c_str_view(null_terminated, static_cast<C const*>(c_str), N - 1)
+        [[nodiscard]] constexpr basic_c_str_view(null_term_t, Cc(&c_str)[N]) noexcept:
+            basic_c_str_view(null_term, static_cast<C const*>(c_str), N - 1)
             {}
 
-        [[nodiscard]] constexpr basic_c_str_view(std::nullptr_t) noexcept
-            : std::basic_string_view<C, T>(empty)
-            {}
+        template <typename A>
+        [[nodiscard]] constexpr basic_c_str_view(std::basic_string<C, T, A> const& string):
+            std::basic_string_view<C, T>(string.c_str(), string.size())
+        {
+            verify_c_str_data();
+        }
+
+        [[nodiscard]] constexpr basic_c_str_view(basic_c_str_view const&) = default;
 
         constexpr basic_c_str_view& operator=(std::basic_string_view<C, T> const&) noexcept = delete;
         constexpr basic_c_str_view& operator=(basic_c_str_view const&) noexcept = default;
@@ -121,14 +121,14 @@ namespace cadapt {
         }
     };
 
-    template <typename C, typename T, typename A>
-    basic_c_str_view(std::basic_string<C, T, A> const&) -> basic_c_str_view<C, T>;
-
     template <typename Cc, std::size_t N>
     basic_c_str_view(Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
 
     template <typename Cc, std::size_t N>
-    basic_c_str_view(null_terminated_t, Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
+    basic_c_str_view(null_term_t, Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
+
+    template <typename C, typename T, typename A>
+    basic_c_str_view(std::basic_string<C, T, A> const&) -> basic_c_str_view<C, T>;
 
 
     using c_str_view = basic_c_str_view<char>;

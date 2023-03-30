@@ -6,6 +6,7 @@
 #include <QString>
 #endif
 
+
 namespace cadapt {
 
 
