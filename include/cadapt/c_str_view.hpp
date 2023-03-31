@@ -59,12 +59,14 @@ namespace cadapt {
             : std::basic_string_view<C, T>(empty)
             {}
 
-        [[nodiscard]] constexpr basic_c_str_view(C const* const c_str) noexcept:
+        template <typename P>
+        requires (std::is_pointer_v<P> && std::convertible_to<P, C const*>)
+        [[nodiscard]] constexpr basic_c_str_view(P c_str) noexcept:
             std::basic_string_view<C, T>(c_str_or_empty(c_str))
             {}
 
         [[nodiscard]] constexpr basic_c_str_view(C const* const c_str, std::size_t const len):
-            basic_c_str_view(null_term, c_str_or_empty(c_str), len)
+            std::basic_string_view<C, T>(c_str_or_empty(c_str), len)
         {
             verify_c_str_ptr(c_str, len);
             verify_c_str_data();
@@ -85,7 +87,7 @@ namespace cadapt {
         template <typename Cc, std::size_t N>
         requires (N > 0 && std::same_as<std::remove_const_t<Cc>, C>)
         [[nodiscard]] constexpr basic_c_str_view(Cc(&c_str)[N]):
-            basic_c_str_view(static_cast<C const*>(c_str), N - 1)
+            std::basic_string_view<C, T>(static_cast<C const*>(c_str), N - 1)
         {
             verify_c_str_data();
             verify_c_str_terminator();
@@ -95,8 +97,13 @@ namespace cadapt {
         template <typename Cc, std::size_t N>
         requires (N > 0 && std::same_as<std::remove_const_t<Cc>, C>)
         [[nodiscard]] constexpr basic_c_str_view(null_term_t, Cc(&c_str)[N]) noexcept:
-            basic_c_str_view(null_term, static_cast<C const*>(c_str), N - 1)
-            {}
+            std::basic_string_view<C, T>(static_cast<C const*>(c_str), N - 1)
+        {
+            if (std::is_constant_evaluated()) {
+                verify_c_str_data();
+                verify_c_str_terminator();
+            }
+        }
 
         template <typename A>
         [[nodiscard]] constexpr basic_c_str_view(std::basic_string<C, T, A> const& string):
@@ -134,11 +141,11 @@ namespace cadapt {
         }
     };
 
-    template <typename Cc, std::size_t N>
-    basic_c_str_view(Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
+    template <typename Cc>
+    basic_c_str_view(Cc*) -> basic_c_str_view<std::remove_const_t<Cc>>;
 
     template <typename Cc, std::size_t N>
-    basic_c_str_view(null_term_t, Cc(&c_str)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
+    basic_c_str_view(null_term_t, Cc(&)[N]) -> basic_c_str_view<std::remove_const_t<Cc>>;
 
     template <typename C, typename T, typename A>
     basic_c_str_view(std::basic_string<C, T, A> const&) -> basic_c_str_view<C, T>;

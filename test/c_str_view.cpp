@@ -48,20 +48,14 @@ template <typename T>
     return ref == c_str;
 }
 
-
-template <typename T>
-static constexpr decltype(auto) constless(T&& v) noexcept {
-    return without_const(std::forward<T>(v));
-};
-
 template <typename C>
-static constexpr C const* ptr(C const* v) noexcept {
+[[nodiscard]] static constexpr C const* ptr(C const* v) noexcept {
     return v;
 };
 
 template <typename C>
-static constexpr decltype(auto) constless_ptr(C const* v) noexcept {
-    return constless(ptr(v));
+[[nodiscard]] static constexpr decltype(auto) non_const_ptr(C const* v) noexcept {
+    return non_const(v);
 };
 
 TEST(c_str_view_test, verify_c_str_ptr) {
@@ -200,11 +194,17 @@ TEST(c_str_view_test, constructor_c_str) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(ptr(u"x\0y")).c_str()));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(ptr(u8"x\0y")).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(constless_ptr("x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(constless_ptr(L"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(constless_ptr(U"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(constless_ptr(u"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(constless_ptr(u8"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(non_const_ptr("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(non_const_ptr(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(non_const_ptr(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(non_const_ptr(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(non_const_ptr(u8"x")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(non_const_ptr("x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(non_const_ptr(L"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(non_const_ptr(U"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(non_const_ptr(u"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(non_const_ptr(u8"x\0y")).c_str()));
 
     CT_EXPECT_TRUE(is_equal(""sv,   basic_c_str_view(static_cast<char const*>(nullptr)).c_str()));
     CT_EXPECT_TRUE(is_equal(L""sv,  basic_c_str_view(static_cast<wchar_t const*>(nullptr)).c_str()));
@@ -212,11 +212,29 @@ TEST(c_str_view_test, constructor_c_str) {
     CT_EXPECT_TRUE(is_equal(u""sv,  basic_c_str_view(static_cast<char16_t const*>(nullptr)).c_str()));
     CT_EXPECT_TRUE(is_equal(u8""sv, basic_c_str_view(static_cast<char8_t const*>(nullptr)).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(constless_ptr("x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(constless_ptr(L"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(constless_ptr(U"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(constless_ptr(u"x")).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(constless_ptr(u8"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(ptr("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(ptr(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(ptr(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(ptr(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(ptr(u8"x")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(ptr("x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(ptr(L"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(ptr(U"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(ptr(u"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(ptr(u8"x\0y")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(non_const_ptr("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(non_const_ptr(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(non_const_ptr(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const_ptr(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const_ptr(u8"x")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(non_const_ptr("x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(non_const_ptr(L"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(non_const_ptr(U"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const_ptr(u"x\0y")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const_ptr(u8"x\0y")).c_str()));
 }
 
 TEST(c_str_view_test, constructor_c_str_len) {
@@ -244,11 +262,11 @@ TEST(c_str_view_test, constructor_c_str_len) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(ptr(u"x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(ptr(u8"x"), 1).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(constless_ptr("x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(constless_ptr(L"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(constless_ptr(U"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(constless_ptr(u"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(constless_ptr(u8"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(non_const_ptr("x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(non_const_ptr(L"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(non_const_ptr(U"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(non_const_ptr(u"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(non_const_ptr(u8"x"), 1).c_str()));
 
     CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(ptr("x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(ptr(L"x"), 1).c_str()));
@@ -256,11 +274,11 @@ TEST(c_str_view_test, constructor_c_str_len) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(ptr(u"x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(ptr(u8"x"), 1).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(constless_ptr("x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(constless_ptr(L"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(constless_ptr(U"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(constless_ptr(u"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(constless_ptr(u8"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(non_const_ptr("x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(non_const_ptr(L"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(non_const_ptr(U"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const_ptr(u"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const_ptr(u8"x"), 1).c_str()));
 
     EXPECT_THROW(c_str_view(static_cast<char const*>(nullptr), 1), std::logic_error);
     EXPECT_THROW(wc_str_view(static_cast<wchar_t const*>(nullptr), 1), std::logic_error);
@@ -306,11 +324,11 @@ TEST(c_str_view_test, constructor_unverified_c_str_len) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, ptr(u"x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, ptr(u8"x"), 1).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, constless_ptr("x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, constless_ptr(L"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, constless_ptr(U"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, constless_ptr(u"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, constless_ptr(u8"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, non_const_ptr("x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, non_const_ptr(L"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, non_const_ptr(U"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, non_const_ptr(u"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, non_const_ptr(u8"x"), 1).c_str()));
 
     CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, ptr("x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, ptr(L"x"), 1).c_str()));
@@ -318,11 +336,11 @@ TEST(c_str_view_test, constructor_unverified_c_str_len) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, ptr(u"x"), 1).c_str()));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, ptr(u8"x"), 1).c_str()));
 
-    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, constless_ptr("x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, constless_ptr(L"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, constless_ptr(U"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, constless_ptr(u"x"), 1).c_str()));
-    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, constless_ptr(u8"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, non_const_ptr("x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, non_const_ptr(L"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, non_const_ptr(U"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, non_const_ptr(u"x"), 1).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, non_const_ptr(u8"x"), 1).c_str()));
 
     EXPECT_TRUE(is_equal(nullptr, c_str_view(null_term, static_cast<char const*>(nullptr), 1).c_str()));
     EXPECT_TRUE(is_equal(nullptr, wc_str_view(null_term, static_cast<wchar_t const*>(nullptr), 1).c_str()));
@@ -341,4 +359,116 @@ TEST(c_str_view_test, constructor_unverified_c_str_len) {
     EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, ptr(U"x\0y"), 3).c_str()));
     EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, ptr(u"x\0y"), 3).c_str()));
     EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, ptr(u8"x\0y"), 3).c_str()));
+}
+
+TEST(c_str_view_test, constructor_c_array) {
+    CT_EXPECT_TRUE(is_equal(""sv,   c_str_view("").c_str()));
+    CT_EXPECT_TRUE(is_equal(L""sv,  wc_str_view(L"").c_str()));
+    CT_EXPECT_TRUE(is_equal(U""sv,  u32c_str_view(U"").c_str()));
+    CT_EXPECT_TRUE(is_equal(u""sv,  u16c_str_view(u"").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8""sv, u8c_str_view(u8"").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view("x").c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(L"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(U"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(u"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(u8"x").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(non_const("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(non_const(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(non_const(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(non_const(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(non_const(u8"x")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view("x").c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(L"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(U"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(u"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(u8"x").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(non_const("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(non_const(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(non_const(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const(u8"x")).c_str()));
+
+    EXPECT_THROW(c_str_view("x\0y"), std::logic_error);
+    EXPECT_THROW(wc_str_view(L"x\0y"), std::logic_error);
+    EXPECT_THROW(u32c_str_view(U"x\0y"), std::logic_error);
+    EXPECT_THROW(u16c_str_view(u"x\0y"), std::logic_error);
+    EXPECT_THROW(u8c_str_view(u8"x\0y"), std::logic_error);
+
+    EXPECT_THROW(c_str_view(non_const("x\0y")), std::logic_error);
+    EXPECT_THROW(wc_str_view(non_const(L"x\0y")), std::logic_error);
+    EXPECT_THROW(u32c_str_view(non_const(U"x\0y")), std::logic_error);
+    EXPECT_THROW(u16c_str_view(non_const(u"x\0y")), std::logic_error);
+    EXPECT_THROW(u8c_str_view(non_const(u8"x\0y")), std::logic_error);
+
+    EXPECT_THROW(basic_c_str_view("x\0y"), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(L"x\0y"), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(U"x\0y"), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(u"x\0y"), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(u8"x\0y"), std::logic_error);
+
+    EXPECT_THROW(basic_c_str_view(non_const("x\0y")), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(non_const(L"x\0y")), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(non_const(U"x\0y")), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(non_const(u"x\0y")), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(non_const(u8"x\0y")), std::logic_error);
+}
+
+TEST(c_str_view_test, constructor_unverified_c_array) {
+    CT_EXPECT_TRUE(is_equal(""sv,   c_str_view(null_term, "").c_str()));
+    CT_EXPECT_TRUE(is_equal(L""sv,  wc_str_view(null_term, L"").c_str()));
+    CT_EXPECT_TRUE(is_equal(U""sv,  u32c_str_view(null_term, U"").c_str()));
+    CT_EXPECT_TRUE(is_equal(u""sv,  u16c_str_view(null_term, u"").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8""sv, u8c_str_view(null_term, u8"").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, "x").c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, L"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, U"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, u"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, u8"x").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, non_const("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, non_const(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, non_const(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, non_const(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, non_const(u8"x")).c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, "x").c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, L"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, U"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, u"x").c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, u8"x").c_str()));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, non_const("x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, non_const(L"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, non_const(U"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, non_const(u"x")).c_str()));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, non_const(u8"x")).c_str()));
+
+    EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, "x\0y").c_str()));
+    EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, L"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, U"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, u"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, u8"x\0y").c_str()));
+
+    EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, non_const("x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, non_const(L"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, non_const(U"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, non_const(u"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, non_const(u8"x\0y")).c_str()));
+
+    EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, "x\0y").c_str()));
+    EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, L"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, U"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, u"x\0y").c_str()));
+    EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, u8"x\0y").c_str()));
+
+    EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, non_const("x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, non_const(L"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, non_const(U"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, non_const(u"x\0y")).c_str()));
+    EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, non_const(u8"x\0y")).c_str()));
 }
