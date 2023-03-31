@@ -14,7 +14,7 @@ namespace cadapt {
 
     // Warning: Modifications are nevertheless forbidden and lead to undefined behavior!
     template <typename T>
-    constexpr T* without_const(T const* ptr) noexcept {
+    constexpr T* non_const(T const* ptr) noexcept {
         return const_cast<T*>(ptr);
     }
 
