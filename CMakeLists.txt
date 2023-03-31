@@ -44,6 +44,8 @@ foreach(STANDARD cxx_std_20 cxx_std_23)
     endif()
     target_include_directories(${PROJECT_NAME}_test_${STANDARD} PRIVATE "${CMAKE_SOURCE_DIR}/include")
     target_compile_features(${PROJECT_NAME}_test_${STANDARD} PRIVATE "${STANDARD}")
+    # Enable for debug purpose
+    # add_compile_definitions(${PROJECT_NAME}_test_${STANDARD} DISABLE_CT_TESTS)
     gtest_discover_tests(${PROJECT_NAME}_test_${STANDARD})
 endforeach()
 
