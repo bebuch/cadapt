@@ -562,3 +562,11 @@ TEST(c_str_view_test, constructor_unverified_std_string) {
     EXPECT_TRUE(is_equal(u"x"sv,  3, basic_c_str_view(null_term, u"x\0y"s)));
     EXPECT_TRUE(is_equal(u8"x"sv, 3, basic_c_str_view(null_term, u8"x\0y"s)));
 }
+
+TEST(c_str_view_test, swap) {
+    auto a = "a"_sv;
+    auto b = "b"_sv;
+    swap(a, b);
+    EXPECT_EQ("b"sv, a);
+    EXPECT_EQ("a"sv, b);
+}
