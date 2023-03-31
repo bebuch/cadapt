@@ -498,3 +498,67 @@ TEST(c_str_view_test, constructor_unverified_c_array) {
     EXPECT_TRUE(is_equal(u"x"sv,  3, basic_c_str_view(null_term, non_const(u"x\0y"))));
     EXPECT_TRUE(is_equal(u8"x"sv, 3, basic_c_str_view(null_term, non_const(u8"x\0y"))));
 }
+
+TEST(c_str_view_test, constructor_std_string) {
+    CT_EXPECT_TRUE(is_equal(""sv,   c_str_view(""s)));
+    CT_EXPECT_TRUE(is_equal(L""sv,  wc_str_view(L""s)));
+    CT_EXPECT_TRUE(is_equal(U""sv,  u32c_str_view(U""s)));
+    CT_EXPECT_TRUE(is_equal(u""sv,  u16c_str_view(u""s)));
+    CT_EXPECT_TRUE(is_equal(u8""sv, u8c_str_view(u8""s)));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view("x"s)));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(L"x"s)));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(U"x"s)));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(u"x"s)));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(u8"x"s)));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view("x"s)));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(L"x"s)));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(U"x"s)));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(u"x"s)));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(u8"x"s)));
+
+    EXPECT_THROW(c_str_view("x\0y"s), std::logic_error);
+    EXPECT_THROW(wc_str_view(L"x\0y"s), std::logic_error);
+    EXPECT_THROW(u32c_str_view(U"x\0y"s), std::logic_error);
+    EXPECT_THROW(u16c_str_view(u"x\0y"s), std::logic_error);
+    EXPECT_THROW(u8c_str_view(u8"x\0y"s), std::logic_error);
+
+    EXPECT_THROW(basic_c_str_view("x\0y"s), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(L"x\0y"s), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(U"x\0y"s), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(u"x\0y"s), std::logic_error);
+    EXPECT_THROW(basic_c_str_view(u8"x\0y"s), std::logic_error);
+}
+
+TEST(c_str_view_test, constructor_unverified_std_string) {
+    CT_EXPECT_TRUE(is_equal(""sv,   c_str_view(null_term, ""s)));
+    CT_EXPECT_TRUE(is_equal(L""sv,  wc_str_view(null_term, L""s)));
+    CT_EXPECT_TRUE(is_equal(U""sv,  u32c_str_view(null_term, U""s)));
+    CT_EXPECT_TRUE(is_equal(u""sv,  u16c_str_view(null_term, u""s)));
+    CT_EXPECT_TRUE(is_equal(u8""sv, u8c_str_view(null_term, u8""s)));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   c_str_view(null_term, "x"s)));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  wc_str_view(null_term, L"x"s)));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  u32c_str_view(null_term, U"x"s)));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  u16c_str_view(null_term, u"x"s)));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, u8c_str_view(null_term, u8"x"s)));
+
+    CT_EXPECT_TRUE(is_equal("x"sv,   basic_c_str_view(null_term, "x"s)));
+    CT_EXPECT_TRUE(is_equal(L"x"sv,  basic_c_str_view(null_term, L"x"s)));
+    CT_EXPECT_TRUE(is_equal(U"x"sv,  basic_c_str_view(null_term, U"x"s)));
+    CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(null_term, u"x"s)));
+    CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(null_term, u8"x"s)));
+
+    EXPECT_TRUE(is_equal("x"sv,   3, c_str_view(null_term, "x\0y"s)));
+    EXPECT_TRUE(is_equal(L"x"sv,  3, wc_str_view(null_term, L"x\0y"s)));
+    EXPECT_TRUE(is_equal(U"x"sv,  3, u32c_str_view(null_term, U"x\0y"s)));
+    EXPECT_TRUE(is_equal(u"x"sv,  3, u16c_str_view(null_term, u"x\0y"s)));
+    EXPECT_TRUE(is_equal(u8"x"sv, 3, u8c_str_view(null_term, u8"x\0y"s)));
+
+    EXPECT_TRUE(is_equal("x"sv,   3, basic_c_str_view(null_term, "x\0y"s)));
+    EXPECT_TRUE(is_equal(L"x"sv,  3, basic_c_str_view(null_term, L"x\0y"s)));
+    EXPECT_TRUE(is_equal(U"x"sv,  3, basic_c_str_view(null_term, U"x\0y"s)));
+    EXPECT_TRUE(is_equal(u"x"sv,  3, basic_c_str_view(null_term, u"x\0y"s)));
+    EXPECT_TRUE(is_equal(u8"x"sv, 3, basic_c_str_view(null_term, u8"x\0y"s)));
+}
