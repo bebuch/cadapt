@@ -12,6 +12,13 @@ namespace cadapt {
 
 
     template <typename C>
+    constexpr void verify_c_str_ptr(C const* const c_str) {
+        if (c_str == nullptr) {
+            throw std::logic_error("nullptr c_str is invalid");
+        }
+    }
+
+    template <typename C>
     constexpr void verify_c_str_ptr(C const* const c_str, std::size_t const len) {
         if (c_str == nullptr && len > C{}) {
             throw std::logic_error("nullptr c_str with length greater zero");
@@ -67,7 +74,13 @@ namespace cadapt {
         // efficient but unsave function, expects C != nullptr && c_str[< len] != 0 && c_str[len] == 0
         [[nodiscard]] constexpr basic_c_str_view(null_term_t, C const* const c_str, std::size_t const len) noexcept:
             std::basic_string_view<C, T>(c_str, len)
-            {}
+        {
+            if (std::is_constant_evaluated()) {
+                verify_c_str_ptr(c_str);
+                verify_c_str_data();
+                verify_c_str_terminator();
+            }
+        }
 
         template <typename Cc, std::size_t N>
         requires (N > 0 && std::same_as<std::remove_const_t<Cc>, C>)
