@@ -563,6 +563,14 @@ TEST(c_str_view_test, constructor_unverified_std_string) {
     EXPECT_TRUE(is_equal(u8"x"sv, 3, basic_c_str_view(null_term, u8"x\0y"s)));
 }
 
+TEST(c_str_view_test, max_size) {
+    CT_EXPECT_TRUE(  ""sv.max_size() - 1 ==   ""_sv.max_size());
+    CT_EXPECT_TRUE( L""sv.max_size() - 1 ==  L""_sv.max_size());
+    CT_EXPECT_TRUE( U""sv.max_size() - 1 ==  U""_sv.max_size());
+    CT_EXPECT_TRUE( u""sv.max_size() - 1 ==  u""_sv.max_size());
+    CT_EXPECT_TRUE(u8""sv.max_size() - 1 == u8""_sv.max_size());
+}
+
 TEST(c_str_view_test, swap) {
     auto a = "a"_sv;
     auto b = "b"_sv;
