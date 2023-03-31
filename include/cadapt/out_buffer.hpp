@@ -3,8 +3,8 @@
 #ifdef __cpp_lib_modules
 import std;
 #else // Support Workaround pre C++23
-#include <string>
 #include <algorithm>
+#include <string>
 #endif
 
 
