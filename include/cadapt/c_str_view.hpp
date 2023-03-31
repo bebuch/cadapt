@@ -112,6 +112,15 @@ namespace cadapt {
             verify_c_str_data();
         }
 
+        template <typename A>
+        [[nodiscard]] constexpr basic_c_str_view(null_term_t, std::basic_string<C, T, A> const& string):
+            std::basic_string_view<C, T>(string.c_str(), string.size())
+        {
+            if (std::is_constant_evaluated()) {
+                verify_c_str_data();
+            }
+        }
+
         [[nodiscard]] constexpr basic_c_str_view(basic_c_str_view const&) = default;
 
         constexpr basic_c_str_view& operator=(std::basic_string_view<C, T> const&) noexcept = delete;
