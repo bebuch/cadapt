@@ -19,8 +19,20 @@ template <typename Ref, typename Test>
 TEST(utility, non_const) {
     using cadapt::non_const;
 
-    static_assert(std::same_as<char*, decltype(non_const(static_cast<char const*>(nullptr)))>);
-    static_assert(std::same_as<char(*)[1], decltype(non_const(static_cast<char const(*)[1]>(nullptr)))>);
+    static constexpr char data[] = "";
+    static_assert(std::same_as<char*, decltype(non_const(static_cast<char const*>(&data[0])))>);
+    static_assert(std::same_as<char&, decltype(non_const(static_cast<char const&>(data[0])))>);
+    static_assert(std::same_as<char&&, decltype(non_const(static_cast<char const&&>(data[0])))>);
+    static_assert(std::same_as<char*, decltype(non_const(const_cast<char*>(static_cast<char const*>(&data[0]))))>);
+    static_assert(std::same_as<char&, decltype(non_const(const_cast<char&>(static_cast<char const&>(data[0]))))>);
+    static_assert(std::same_as<char&&, decltype(non_const(const_cast<char&&>(static_cast<char const&&>(data[0]))))>);
+    static_assert(std::same_as<char(*)[1], decltype(non_const(static_cast<char const(*)[1]>(&data)))>);
+    static_assert(std::same_as<char(&)[1], decltype(non_const(static_cast<char const(&)[1]>(data)))>);
+    static_assert(std::same_as<char(&&)[1], decltype(non_const(static_cast<char const(&&)[1]>(data)))>);
+    static_assert(std::same_as<char(*)[1], decltype(non_const(const_cast<char(*)[1]>(static_cast<char const(*)[1]>(&data))))>);
+    static_assert(std::same_as<char(&)[1], decltype(non_const(const_cast<char(&)[1]>(static_cast<char const(&)[1]>(data))))>);
+    static_assert(std::same_as<char(&&)[1], decltype(non_const(const_cast<char(&&)[1]>(static_cast<char const(&&)[1]>(data))))>);
+    static_assert(std::same_as<char(&)[2], decltype(non_const("x"))>);
 
     static constexpr int value = 5;
     CT_EXPECT_TRUE(is_equal(&value, non_const(&value)));
