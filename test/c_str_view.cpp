@@ -2,9 +2,9 @@
 
 #include "test.hpp"
 
-#include <concepts>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <ranges>
 
 using namespace std::literals;
 using namespace cadapt;
@@ -569,4 +569,13 @@ TEST(c_str_view_test, swap) {
     swap(a, b);
     EXPECT_EQ("b"sv, a);
     EXPECT_EQ("a"sv, b);
+}
+
+TEST(c_str_view_test, ranges_support) {
+    auto ref = "bcd"sv;
+    auto test = "abc"_sv | std::views::transform([](char c) { return ++c; });
+    ASSERT_EQ(ref.size(), std::size(test));
+    for(std::size_t i = 0; i < ref.size(); ++i) {
+        EXPECT_EQ(ref[i], test[i]);
+    }
 }
