@@ -577,6 +577,15 @@ TEST(c_str_view_test, swap) {
     swap(a, b);
     EXPECT_EQ("b"sv, a);
     EXPECT_EQ("a"sv, b);
+
+    static constexpr auto pair = []{
+        auto a = "a"_sv;
+        auto b = "b"_sv;
+        swap(a, b);
+        return std::make_pair(a, b);
+    }();
+    static_assert("b"sv == pair.first);
+    static_assert("a"sv == pair.second);
 }
 
 TEST(c_str_view_test, ranges_support) {
