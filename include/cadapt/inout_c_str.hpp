@@ -26,9 +26,13 @@ namespace cadapt {
         string[0] = 0;
     }
 
+    /// Does resize the `string` to `count` without changing its c_str(). The new size must be equal to or greater then
+    /// the previous size.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     constexpr void enlarge_for_inout_ptr(std::basic_string<C, T, A>& string, std::size_t const count) {
-        if (count < string.size()) {
+        auto const previous_size = string.size();
+
+        if (count < previous_size) {
             throw std::logic_error("inout_ptr enlarge to size that is smaller then previous size");
         }
 
@@ -39,6 +43,8 @@ namespace cadapt {
     #else // Support Workaround pre C++23
         string.resize(count);
     #endif
+
+        string[previous_size] = 0;
     }
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
