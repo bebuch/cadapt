@@ -11,6 +11,9 @@ namespace cadapt {
     /// Does resize the `string` to `count` and sets its content to an empty C string. The characters at positions
     /// `0` and `count` are null terminators after the function call. All other characters have undefined values
     /// after the function call.
+    ///
+    /// Setting the first character to zero guarantees that the string after the function will contain a valid (empty)
+    /// c_str even if the called C function does not modify the buffer.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     constexpr void resize_for_out_ptr(std::basic_string<C, T, A>& string, std::size_t const count) {
         string.clear(); // make sure the following resize don't care about the old content
