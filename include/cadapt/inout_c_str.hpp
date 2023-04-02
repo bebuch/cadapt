@@ -15,7 +15,7 @@ namespace cadapt {
     /// Setting the first character to zero guarantees that the string after the function will contain a valid (empty)
     /// c_str even if the called C function does not modify the buffer.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    constexpr void resize_for_out_ptr(std::basic_string<C, T, A>& string, std::size_t const count) {
+    constexpr void resize_for_out_c_str(std::basic_string<C, T, A>& string, std::size_t const count) {
         string.clear(); // make sure the following resize don't care about the old content
 
     #ifdef __cpp_lib_string_resize_and_overwrite
@@ -32,7 +32,7 @@ namespace cadapt {
     /// Does resize the `string` to `count` without changing its c_str(). The new size must be equal to or greater then
     /// the previous size.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
-    constexpr void enlarge_for_inout_ptr(std::basic_string<C, T, A>& string, std::size_t const count) {
+    constexpr void enlarge_for_inout_c_str(std::basic_string<C, T, A>& string, std::size_t const count) {
         auto const previous_size = string.size();
 
         if (count < previous_size) {
@@ -95,7 +95,7 @@ namespace cadapt {
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     [[nodiscard]] constexpr auto out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length)
     -> inout_c_str_t<C, T, A> {
-        resize_for_out_ptr(target, max_target_length);
+        resize_for_out_c_str(target, max_target_length);
         return target;
     }
 

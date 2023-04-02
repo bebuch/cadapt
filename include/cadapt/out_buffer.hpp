@@ -41,7 +41,7 @@ namespace cadapt {
         out_buffer_t(value_type& target, size_type const max_target_length)
             : out_buffer_t(target)
         {
-            resize_for_out_ptr(target, max_target_length);
+            resize_for_out_c_str(target, max_target_length);
         }
 
         out_buffer_t(out_buffer_t const&) = delete;
