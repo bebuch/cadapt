@@ -8,12 +8,9 @@
 namespace cadapt {
 
 
-    /// Does resize the `string` to `count` and sets its content to an empty C string. The characters at positions
-    /// `0` and `count` are null terminators after the function call. All other characters have undefined values
+    /// Does resize the `string` to `count` and sets its content to an empty C string. The character at position
+    /// `count` is a null terminators after the function call. All other characters have undefined values
     /// after the function call.
-    ///
-    /// Setting the first character to zero guarantees that the string after the function will contain a valid (empty)
-    /// c_str even if the called C function does not modify the buffer.
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     constexpr void resize_for_out_c_str(std::basic_string<C, T, A>& string, std::size_t const count) {
         string.clear(); // make sure the following resize don't care about the old content
@@ -25,8 +22,6 @@ namespace cadapt {
     #else // Support Workaround pre C++23
         string.resize(count);
     #endif
-
-        string[0] = 0;
     }
 
     /// Does resize the `string` to `count` without changing its c_str(). The new size must be equal to or greater then
@@ -93,10 +88,17 @@ namespace cadapt {
     }
 
     template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
+    [[nodiscard]] constexpr auto out_c_str(std::basic_string<C, T, A>& target)
+    -> inout_c_str_t<C, T, A> {
+        target[0] = 0;
+        return target;
+    }
+
+    template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
     [[nodiscard]] constexpr auto out_c_str(std::basic_string<C, T, A>& target, std::size_t const max_target_length)
     -> inout_c_str_t<C, T, A> {
         resize_for_out_c_str(target, max_target_length);
-        return target;
+        return out_c_str(target);
     }
 
 
