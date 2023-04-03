@@ -5,6 +5,10 @@
 #include <functional>
 #include <type_traits>
 
+#if __has_include(<QString>)
+#include <QString>
+#endif
+
 
 namespace cadapt {
 
@@ -24,6 +28,37 @@ namespace cadapt {
             return const_cast<std::add_rvalue_reference_t<std::remove_const_t<raw_type>>>(ref);
         }
     }
+
+#if __has_include(<QString>)
+    template <typename C>
+    requires same_as_one_of<C, char, wchar_t, char32_t, char16_t>
+    [[nodiscard]] constexpr std::basic_string<C> qt_to_std(QString const& string) {
+        if constexpr(std::same_as<C, char>){
+            return string.toStdString();
+        } else if constexpr(std::same_as<C, wchar_t>){
+            return string.toStdWString();
+        } else if constexpr(std::same_as<C, char16_t>){
+            return string.toStdU16String();
+        } else if constexpr(std::same_as<C, char32_t>){
+            return string.toStdU32String();
+        }
+    }
+
+    template <typename C>
+    requires same_as_one_of<C, char, wchar_t, char32_t, char16_t>
+    [[nodiscard]] constexpr QString std_to_qt(std::basic_string<C> const& string) {
+        if constexpr(std::same_as<C, char>){
+            return QString::fromStdString(string);
+        } else if constexpr(std::same_as<C, wchar_t>){
+            return QString::fromStdWString(string);
+        } else if constexpr(std::same_as<C, char16_t>){
+            return QString::fromStdU16String(string);
+        } else if constexpr(std::same_as<C, char32_t>){
+            return QString::fromStdU32String(string);
+        }
+    }
+#endif
+
 
 
 }

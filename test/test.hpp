@@ -9,6 +9,9 @@
 #define CT_EXPECT_FALSE(val) \
     EXPECT_FALSE(val)
 
+#define CT_EXPECT_EQ(a, b) \
+    EXPECT_EQ(a, b)
+
 #define CT_EXPECT_NO_THROW(val) \
     EXPECT_NO_THROW(val)
 #else
@@ -19,6 +22,10 @@
 #define CT_EXPECT_FALSE(val) \
     static_assert(!(val)); \
     EXPECT_FALSE(val)
+
+#define CT_EXPECT_EQ(a, b) \
+    EXPECT_EQ(a, b); \
+    static_assert((a) == (b))
 
 #define CT_EXPECT_NO_THROW(val) \
     static_assert(((val), true)); \

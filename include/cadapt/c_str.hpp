@@ -2,10 +2,6 @@
 
 #include "c_str_view.hpp"
 
-#if __has_include(<QString>)
-#include <QString>
-#endif
-
 
 namespace cadapt {
 
@@ -51,17 +47,9 @@ namespace cadapt {
 
 #if __has_include(<QString>)
     template <typename C = char>
-    requires same_as_one_of<C, char, wchar_t, char16_t, char32_t>
+    requires same_as_one_of<C, char, wchar_t, char32_t, char16_t>
     [[nodiscard]] constexpr c_str_t<C> unverified_c_str(QString const& string) {
-        if constexpr(std::same_as<C, char>){
-            return string.toStdString();
-        } else if constexpr(std::same_as<C, wchar_t>){
-            return string.toStdWString();
-        } else if constexpr(std::same_as<C, char16_t>){
-            return string.toStdU16String();
-        } else if constexpr(std::same_as<C, char32_t>){
-            return string.toStdU32String();
-        }
+        return qt_to_std<C>(string);
     }
 #endif
 
@@ -93,7 +81,7 @@ namespace cadapt {
 
 #if __has_include(<QString>)
     template <typename C = char>
-    requires same_as_one_of<C, char, wchar_t, char16_t, char32_t>
+    requires same_as_one_of<C, char, wchar_t, char32_t, char16_t>
     [[nodiscard]] constexpr c_str_t<C> c_str(QString const& string) {
         verify_c_str_data(string.data(), string.size());
         return unverified_c_str<C>(string);
