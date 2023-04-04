@@ -12,26 +12,26 @@ static_assert(cadapt::same_as_one_of<int, float, int>);
 
 
 template <typename Ref, typename Test>
-[[nodiscard]] static constexpr bool is_equal(Ref&& ref, Test&& test) noexcept {
-    return std::forward<Ref>(ref) == std::forward<Test>(test);
+[[nodiscard]] static constexpr bool is_equal(Ref* ref, Test* test) noexcept {
+    return ref == test;
 }
+
 
 TEST(utility, non_const) {
     using cadapt::non_const;
 
-    static constexpr char data[] = "";
-    static_assert(std::same_as<char*, decltype(non_const(static_cast<char const*>(&data[0])))>);
-    static_assert(std::same_as<char&, decltype(non_const(static_cast<char const&>(data[0])))>);
-    static_assert(std::same_as<char&&, decltype(non_const(static_cast<char const&&>(data[0])))>);
-    static_assert(std::same_as<char*, decltype(non_const(const_cast<char*>(static_cast<char const*>(&data[0]))))>);
-    static_assert(std::same_as<char&, decltype(non_const(const_cast<char&>(static_cast<char const&>(data[0]))))>);
-    static_assert(std::same_as<char&&, decltype(non_const(const_cast<char&&>(static_cast<char const&&>(data[0]))))>);
-    static_assert(std::same_as<char(*)[1], decltype(non_const(static_cast<char const(*)[1]>(&data)))>);
-    static_assert(std::same_as<char(&)[1], decltype(non_const(static_cast<char const(&)[1]>(data)))>);
-    static_assert(std::same_as<char(&&)[1], decltype(non_const(static_cast<char const(&&)[1]>(data)))>);
-    static_assert(std::same_as<char(*)[1], decltype(non_const(const_cast<char(*)[1]>(static_cast<char const(*)[1]>(&data))))>);
-    static_assert(std::same_as<char(&)[1], decltype(non_const(const_cast<char(&)[1]>(static_cast<char const(&)[1]>(data))))>);
-    static_assert(std::same_as<char(&&)[1], decltype(non_const(const_cast<char(&&)[1]>(static_cast<char const(&&)[1]>(data))))>);
+    static_assert(std::same_as<char*, decltype(non_const(std::declval<char const*>()))>);
+    static_assert(std::same_as<char&, decltype(non_const(std::declval<char const&>()))>);
+    static_assert(std::same_as<char&&, decltype(non_const(std::declval<char const&&>()))>);
+    static_assert(std::same_as<char*, decltype(non_const(std::declval<char*>()))>);
+    static_assert(std::same_as<char&, decltype(non_const(std::declval<char&>()))>);
+    static_assert(std::same_as<char&&, decltype(non_const(std::declval<char&&>()))>);
+    static_assert(std::same_as<char(*)[1], decltype(non_const(std::declval<char const(*)[1]>()))>);
+    static_assert(std::same_as<char(&)[1], decltype(non_const(std::declval<char const(&)[1]>()))>);
+    static_assert(std::same_as<char(&&)[1], decltype(non_const(std::declval<char const(&&)[1]>()))>);
+    static_assert(std::same_as<char(*)[1], decltype(non_const(std::declval<char(*)[1]>()))>);
+    static_assert(std::same_as<char(&)[1], decltype(non_const(std::declval<char(&)[1]>()))>);
+    static_assert(std::same_as<char(&&)[1], decltype(non_const(std::declval<char(&&)[1]>()))>);
     static_assert(std::same_as<char(&)[2], decltype(non_const("x"))>);
 
     static constexpr int value = 5;
