@@ -17,21 +17,21 @@ namespace cadapt {
     concept same_as_one_of = (std::same_as<Ref, Tests> || ...);
 
     // Warning: Modifications are nevertheless forbidden and lead to undefined behavior!
-	template <typename T>
-	constexpr decltype(auto) non_const(T&& ref) noexcept {
-		using unref_type = std::remove_reference_t<T>;
-		if constexpr(std::is_pointer_v<unref_type>) {
-			return const_cast<std::remove_const_t<std::remove_pointer_t<unref_type>>*>(ref);
-		} else if constexpr(std::is_lvalue_reference_v<T&&>) {
-			// the std::forward is a workaround for a MSVC bug
-			using type = std::remove_const_t<unref_type>&;
-			return std::forward<type>(const_cast<type>(ref));
-		} else {
-			// the std::forward is a workaround for a MSVC bug
-			using type = std::remove_const_t<unref_type>&&;
-			return std::forward<type>(const_cast<type>(ref));
-		}
-	}
+    template <typename T>
+    constexpr decltype(auto) non_const(T&& ref) noexcept {
+        using unref_type = std::remove_reference_t<T>;
+        if constexpr(std::is_pointer_v<unref_type>) {
+            return const_cast<std::remove_const_t<std::remove_pointer_t<unref_type>>*>(ref);
+        } else if constexpr(std::is_lvalue_reference_v<T&&>) {
+            // the std::forward is a workaround for a MSVC bug
+            using type = std::remove_const_t<unref_type>&;
+            return std::forward<type>(const_cast<type>(ref));
+        } else {
+            // the std::forward is a workaround for a MSVC bug
+            using type = std::remove_const_t<unref_type>&&;
+            return std::forward<type>(const_cast<type>(ref));
+        }
+    }
 
 #if __has_include(<QString>)
     template <typename C>
