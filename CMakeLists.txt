@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.12)
 
 project(cadapt)
 
@@ -35,11 +35,21 @@ FetchContent_MakeAvailable(googletest googlebenchmark)
 enable_testing()
 include(GoogleTest)
 
+
+# Create list of c++ standards supported by target_compile_features depending on CMake version
+set(TESTED_STANDARDS cxx_std_20)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20.0")
+    list(APPEND TESTED_STANDARDS cxx_std_23)
+endif()
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.25.0")
+    list(APPEND TESTED_STANDARDS cxx_std_26)
+endif()
+
 ######################
 # == Unit testing == #
 ######################
 file(GLOB TEST_SOURCE_FILES "${CMAKE_SOURCE_DIR}/test/*.cpp")
-foreach(STANDARD cxx_std_20 cxx_std_23)
+foreach(STANDARD ${TESTED_STANDARDS})
     add_executable(${PROJECT_NAME}_test_${STANDARD} "${TEST_SOURCE_FILES}")
     target_link_libraries(${PROJECT_NAME}_test_${STANDARD} GTest::gtest_main)
     if(Qt6_FOUND)
@@ -56,7 +66,7 @@ endforeach()
 # == Benchmarking == #
 ######################
 file(GLOB TEST_SOURCE_FILES "${CMAKE_SOURCE_DIR}/benchmark/*.cpp")
-foreach(STANDARD cxx_std_20 cxx_std_23)
+foreach(STANDARD ${TESTED_STANDARDS})
     add_executable(${PROJECT_NAME}_benchmark_${STANDARD} "${TEST_SOURCE_FILES}")
     target_link_libraries(${PROJECT_NAME}_benchmark_${STANDARD} benchmark::benchmark)
     if(Qt6_FOUND)
