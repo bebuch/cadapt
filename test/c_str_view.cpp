@@ -103,11 +103,11 @@ TEST(c_str_view_test, verify_c_str_ptr) {
     CT_EXPECT_NO_THROW(verify_c_str_ptr(static_cast<char16_t const*>(nullptr), 0));
     CT_EXPECT_NO_THROW(verify_c_str_ptr(static_cast<char8_t const*>(nullptr), 0));
 
-    EXPECT_THROW(verify_c_str_ptr(static_cast<char const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(verify_c_str_ptr(static_cast<wchar_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(verify_c_str_ptr(static_cast<char32_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(verify_c_str_ptr(static_cast<char16_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(verify_c_str_ptr(static_cast<char8_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_ptr(static_cast<char const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_ptr(static_cast<wchar_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_ptr(static_cast<char32_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_ptr(static_cast<char16_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_ptr(static_cast<char8_t const*>(nullptr), 1), std::logic_error);
 }
 
 TEST(c_str_view_test, verify_c_str_data) {
@@ -123,11 +123,11 @@ TEST(c_str_view_test, verify_c_str_data) {
     CT_EXPECT_NO_THROW(verify_c_str_data(u"x", 1));
     CT_EXPECT_NO_THROW(verify_c_str_data(u8"x", 1));
 
-    EXPECT_THROW(verify_c_str_data("x\0y", 3), std::logic_error);
-    EXPECT_THROW(verify_c_str_data(L"x\0y", 3), std::logic_error);
-    EXPECT_THROW(verify_c_str_data(U"x\0y", 3), std::logic_error);
-    EXPECT_THROW(verify_c_str_data(u"x\0y", 3), std::logic_error);
-    EXPECT_THROW(verify_c_str_data(u8"x\0y", 3), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_data("x\0y", 3), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_data(L"x\0y", 3), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_data(U"x\0y", 3), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_data(u"x\0y", 3), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_data(u8"x\0y", 3), std::logic_error);
 }
 
 TEST(c_str_view_test, verify_c_str_terminator) {
@@ -143,11 +143,11 @@ TEST(c_str_view_test, verify_c_str_terminator) {
     CT_EXPECT_NO_THROW(verify_c_str_terminator(u"x", 1));
     CT_EXPECT_NO_THROW(verify_c_str_terminator(u8"x", 1));
 
-    EXPECT_THROW(verify_c_str_terminator("x", 0), std::logic_error);
-    EXPECT_THROW(verify_c_str_terminator(L"x", 0), std::logic_error);
-    EXPECT_THROW(verify_c_str_terminator(U"x", 0), std::logic_error);
-    EXPECT_THROW(verify_c_str_terminator(u"x", 0), std::logic_error);
-    EXPECT_THROW(verify_c_str_terminator(u8"x", 0), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_terminator("x", 0), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_terminator(L"x", 0), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_terminator(U"x", 0), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_terminator(u"x", 0), std::logic_error);
+    EXPECT_THROW((void)verify_c_str_terminator(u8"x", 0), std::logic_error);
 }
 
 TEST(c_str_view_test, static_members) {
@@ -306,23 +306,23 @@ TEST(c_str_view_test, constructor_c_str_len) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const_ptr(u"x"), 1)));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const_ptr(u8"x"), 1)));
 
-    EXPECT_THROW(c_str_view(static_cast<char const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(wc_str_view(static_cast<wchar_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(u32c_str_view(static_cast<char32_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(u16c_str_view(static_cast<char16_t const*>(nullptr), 1), std::logic_error);
-    EXPECT_THROW(u8c_str_view(static_cast<char8_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)c_str_view(static_cast<char const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(static_cast<wchar_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(static_cast<char32_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(static_cast<char16_t const*>(nullptr), 1), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(static_cast<char8_t const*>(nullptr), 1), std::logic_error);
 
-    EXPECT_THROW(c_str_view(ptr("x"), 0), std::logic_error);
-    EXPECT_THROW(wc_str_view(ptr(L"x"), 0), std::logic_error);
-    EXPECT_THROW(u32c_str_view(ptr(U"x"), 0), std::logic_error);
-    EXPECT_THROW(u16c_str_view(ptr(u"x"), 0), std::logic_error);
-    EXPECT_THROW(u8c_str_view(ptr(u8"x"), 0), std::logic_error);
+    EXPECT_THROW((void)c_str_view(ptr("x"), 0), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(ptr(L"x"), 0), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(ptr(U"x"), 0), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(ptr(u"x"), 0), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(ptr(u8"x"), 0), std::logic_error);
 
-    EXPECT_THROW(c_str_view(ptr("x\0y"), 3), std::logic_error);
-    EXPECT_THROW(wc_str_view(ptr(L"x\0y"), 3), std::logic_error);
-    EXPECT_THROW(u32c_str_view(ptr(U"x\0y"), 3), std::logic_error);
-    EXPECT_THROW(u16c_str_view(ptr(u"x\0y"), 3), std::logic_error);
-    EXPECT_THROW(u8c_str_view(ptr(u8"x\0y"), 3), std::logic_error);
+    EXPECT_THROW((void)c_str_view(ptr("x\0y"), 3), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(ptr(L"x\0y"), 3), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(ptr(U"x\0y"), 3), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(ptr(u"x\0y"), 3), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(ptr(u8"x\0y"), 3), std::logic_error);
 }
 
 TEST(c_str_view_test, constructor_unverified_c_str_len) {
@@ -418,29 +418,29 @@ TEST(c_str_view_test, constructor_c_array) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(non_const(u"x"))));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(non_const(u8"x"))));
 
-    EXPECT_THROW(c_str_view("x\0y"), std::logic_error);
-    EXPECT_THROW(wc_str_view(L"x\0y"), std::logic_error);
-    EXPECT_THROW(u32c_str_view(U"x\0y"), std::logic_error);
-    EXPECT_THROW(u16c_str_view(u"x\0y"), std::logic_error);
-    EXPECT_THROW(u8c_str_view(u8"x\0y"), std::logic_error);
+    EXPECT_THROW((void)c_str_view("x\0y"), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(L"x\0y"), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(U"x\0y"), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(u"x\0y"), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(u8"x\0y"), std::logic_error);
 
-    EXPECT_THROW(c_str_view(non_const("x\0y")), std::logic_error);
-    EXPECT_THROW(wc_str_view(non_const(L"x\0y")), std::logic_error);
-    EXPECT_THROW(u32c_str_view(non_const(U"x\0y")), std::logic_error);
-    EXPECT_THROW(u16c_str_view(non_const(u"x\0y")), std::logic_error);
-    EXPECT_THROW(u8c_str_view(non_const(u8"x\0y")), std::logic_error);
+    EXPECT_THROW((void)c_str_view(non_const("x\0y")), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(non_const(L"x\0y")), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(non_const(U"x\0y")), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(non_const(u"x\0y")), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(non_const(u8"x\0y")), std::logic_error);
 
-    EXPECT_THROW(basic_c_str_view("x\0y"), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(L"x\0y"), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(U"x\0y"), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(u"x\0y"), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(u8"x\0y"), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view("x\0y"), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(L"x\0y"), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(U"x\0y"), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(u"x\0y"), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(u8"x\0y"), std::logic_error);
 
-    EXPECT_THROW(basic_c_str_view(non_const("x\0y")), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(non_const(L"x\0y")), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(non_const(U"x\0y")), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(non_const(u"x\0y")), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(non_const(u8"x\0y")), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(non_const("x\0y")), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(non_const(L"x\0y")), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(non_const(U"x\0y")), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(non_const(u"x\0y")), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(non_const(u8"x\0y")), std::logic_error);
 }
 
 TEST(c_str_view_test, constructor_unverified_c_array) {
@@ -518,17 +518,17 @@ TEST(c_str_view_test, constructor_std_string) {
     CT_EXPECT_TRUE(is_equal(u"x"sv,  basic_c_str_view(u"x"s)));
     CT_EXPECT_TRUE(is_equal(u8"x"sv, basic_c_str_view(u8"x"s)));
 
-    EXPECT_THROW(c_str_view("x\0y"s), std::logic_error);
-    EXPECT_THROW(wc_str_view(L"x\0y"s), std::logic_error);
-    EXPECT_THROW(u32c_str_view(U"x\0y"s), std::logic_error);
-    EXPECT_THROW(u16c_str_view(u"x\0y"s), std::logic_error);
-    EXPECT_THROW(u8c_str_view(u8"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)c_str_view("x\0y"s), std::logic_error);
+    EXPECT_THROW((void)wc_str_view(L"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)u32c_str_view(U"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)u16c_str_view(u"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)u8c_str_view(u8"x\0y"s), std::logic_error);
 
-    EXPECT_THROW(basic_c_str_view("x\0y"s), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(L"x\0y"s), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(U"x\0y"s), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(u"x\0y"s), std::logic_error);
-    EXPECT_THROW(basic_c_str_view(u8"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view("x\0y"s), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(L"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(U"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(u"x\0y"s), std::logic_error);
+    EXPECT_THROW((void)basic_c_str_view(u8"x\0y"s), std::logic_error);
 }
 
 TEST(c_str_view_test, constructor_unverified_std_string) {

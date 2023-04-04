@@ -44,7 +44,7 @@ TEST(inout_c_str, enlarge_for_inout_c_str) {
         enlarge_for_inout_c_str(target, 512);
         ASSERT_EQ(target.size(), 512);
         ASSERT_EQ(original_c_str, target.c_str());
-        EXPECT_THROW(enlarge_for_inout_c_str(target, 384), std::logic_error);
+        EXPECT_THROW((void)enlarge_for_inout_c_str(target, 384), std::logic_error);
     };
 
     test("test"s);
