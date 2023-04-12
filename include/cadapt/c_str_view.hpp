@@ -39,9 +39,11 @@ namespace cadapt {
         }
     }
 
-    struct null_term_t{};
+    struct null_term_t{
+        explicit null_term_t() = default;
+    };
 
-    static constexpr null_term_t null_term;
+    inline constexpr null_term_t null_term{};
 
     template <typename C, typename T = std::char_traits<C>>
     struct basic_c_str_view: std::basic_string_view<C, T>{

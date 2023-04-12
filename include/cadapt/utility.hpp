@@ -7,6 +7,7 @@
 
 #if __has_include(<QString>)
 #include <QString>
+#include <QStringView>
 #endif
 
 

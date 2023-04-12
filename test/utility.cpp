@@ -43,3 +43,38 @@ TEST(utility, non_const) {
     static constexpr char array[] = "test";
     CT_EXPECT_TRUE(is_equal(array, non_const(array)));
 }
+
+#include <QStringEncoder>
+#include <QStringView>
+
+std::string qStringViewToStdString1(QStringView const data) {
+    return data.toString().toStdString();
+}
+
+std::string qStringViewToStdString2(QStringView const data) {
+    auto const bytes = data.toUtf8();
+    return std::string(bytes.constData(), bytes.length());
+}
+
+std::string qStringViewToStdString3(QStringView const data) {
+    auto toUtf8 = QStringEncoder(QStringEncoder::Utf8);
+    auto len = toUtf8.requiredSpace(data.length());
+    std::string result;
+#ifdef __cpp_lib_string_resize_and_overwrite
+    result.resize_and_overwrite(len, [len](char*, std::size_t) { return len; });
+#else
+    result.resize(len);
+#endif
+    char* end = toUtf8.appendToBuffer(result.data(), data);
+    result.resize(end - result.data());
+    return result;
+}
+
+
+TEST(utility, qStringViewToStdString) {
+    EXPECT_EQ(QString("宇宙よりも遠い場所"), QStringView(u"宇宙よりも遠い場所"));
+    EXPECT_EQ(QString("宇宙よりも遠い場所"), QString::fromStdString(QString("宇宙よりも遠い場所").toStdString()));
+    EXPECT_EQ(QString("宇宙よりも遠い場所"), QString::fromStdString(qStringViewToStdString1(QStringView(u"宇宙よりも遠い場所"))));
+    EXPECT_EQ(QString("宇宙よりも遠い場所"), QString::fromStdString(qStringViewToStdString2(QStringView(u"宇宙よりも遠い場所"))));
+    EXPECT_EQ(QString("宇宙よりも遠い場所"), QString::fromStdString(qStringViewToStdString3(QStringView(u"宇宙よりも遠い場所"))));
+}
