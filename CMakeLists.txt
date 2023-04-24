@@ -48,7 +48,7 @@ endif()
 ######################
 # == Unit testing == #
 ######################
-file(GLOB TEST_SOURCE_FILES "${CMAKE_SOURCE_DIR}/test/*.cpp")
+file(GLOB TEST_SOURCE_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/test/*.cpp")
 foreach(STANDARD ${TESTED_STANDARDS})
     add_executable(${PROJECT_NAME}_test_${STANDARD} "${TEST_SOURCE_FILES}")
     target_link_libraries(${PROJECT_NAME}_test_${STANDARD} GTest::gtest_main)
@@ -65,7 +65,7 @@ endforeach()
 ######################
 # == Benchmarking == #
 ######################
-file(GLOB TEST_SOURCE_FILES "${CMAKE_SOURCE_DIR}/benchmark/*.cpp")
+file(GLOB TEST_SOURCE_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/benchmark/*.cpp")
 foreach(STANDARD ${TESTED_STANDARDS})
     add_executable(${PROJECT_NAME}_benchmark_${STANDARD} "${TEST_SOURCE_FILES}")
     target_link_libraries(${PROJECT_NAME}_benchmark_${STANDARD} benchmark::benchmark)
